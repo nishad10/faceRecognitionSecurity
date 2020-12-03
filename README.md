@@ -1,5 +1,9 @@
 # faceRecognitionSecurity
-Using pre-built face recognition  models to identify presence of strangers using a camera
+Using pre-built face recognition  models to identify presence of strangers using a camera. 
+
+We notify the user via email if unknown face is encountered in the video.
+
+Check out Program Instructions Runtime below to learn more on how to use the program after Installation.
 
 Built using face recognition model from here :-
 
@@ -46,3 +50,49 @@ Install numpy
 
 We have a few other modules imported in the program, these are and should be a part of your standard library and should come installed by default.
 If you face any errors after running the above errors please take a look at what library you are missing and refer to docs to intall it using `pip`
+
+## Program Instructions Runtime
+
+### On cloning and installation, when you run the program this is what you should see.
+
+![MainView](./documents/mainview.png)
+
+You need to add your picture to known faces or the program wont recognize you. Also we need to setup Email settings if we want to receive email notifications.
+
+### Get ready to upload your picture to list of known images and setup email
+
+**!!EMAIL IMPORTANT!!**
+
+To make sure you can send email properly the gmail account used to send email notifications need to have less secure apps enabled. To do this
+
+**!!EMAIL IMPORTANT!!**
+
+[Take a look at documentation on it](https://support.google.com/accounts/answer/6010255?hl=en)
+
+[Enable less secure apps](https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4Mc9QAtO60wXl15dRZQak2sPbRIj5yt0jewcBk7IhdnvnItkPyXeYWichtTMT8piGSQ6dWll67p9FqyNtAVy91I5kTSnA)
+
+![Settings](./documents/settings.png)
+
+### Upload your image to known faces
+
+Click the upload image button and then choose a picture to upload. After that give that picture a name!
+
+![Upload1](./documents/upload1.png)
+
+
+![Upload2](./documents/upload2.png)
+
+**!!UPLOAD IMPORTANT!!** 
+
+Right now the program does not take into account uploaded images immediately. You will have to quit using the Exit button and then restart the program so that the new uploaded image can be taken into consideration.
+
+**!!UPLOAD IMPORTANT!!** 
+
+### Run the program
+
+Now that we have everything setup we can click `Run Program` button to run the actual program. The threshold right now is setup to be 30 seconds so if there is unknown face on screen you should get an email every 30 seconds. Make sure you change this in program before running to avoid spam. The picture should be recognized with your name or else a Unknown name will be shown below the image.
+
+![Upload1](./documents/finalview.png)
+
+
+
