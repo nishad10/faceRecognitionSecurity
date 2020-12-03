@@ -7,12 +7,9 @@ import cv2
 import numpy as np
 import time
 from PIL import Image, ImageTk
+import tkinter.ttk
 import tkinter as tk    # from tkinter import Tk for Python 3.x
-from tkinter import ttk
 from tkinter.filedialog import askopenfilename
-from tkinter import simpledialog
-
-runSecurity = False
 
 
 def runProgram():
@@ -22,8 +19,8 @@ def runProgram():
 
 def uploadimage():
     filename = askopenfilename()
-    answer = simpledialog.askstring("Input", "What is the name of this person?",
-                                    parent=window)
+    answer = tk.simpledialog.askstring("Input", "What is the name of this person?",
+                                       parent=window)
     if answer is not None:
         shutil.move(filename, './known_faces/' + answer + '.jpg')
     else:
@@ -42,9 +39,6 @@ def exit():
 ########### EMAIL SETTINGS ###########
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
-sender_email = input("Email that will generate notification:")
-receiver_email = input("Email that will receive notification:")
-password = input("Type your password and press enter:")
 message = """\
 Subject: Face Recognition Security Alert
 
@@ -82,27 +76,81 @@ emailSentTime = time.time()
 ## Open Window ##
 window = tk.Tk()  # Makes main window
 window.title("Camera Security")
-window.geometry("400x300")
-button1 = tk.Button(window, text="Upload Image", command=uploadimage)
-button1.grid(column=1, row=2, padx=5, pady=10)
-button2 = tk.Button(window, text="Run Program", command=runProgram)
-button2.grid(column=2, row=2, padx=5, pady=10)
-button3 = tk.Button(window, text="Exit", command=exit)
-button3.grid(column=3, row=2, padx=5, pady=10)
-
-label = tk.Label(text='Most Recent list of known faces')
+window.geometry("650x500")
+label = tk.Label(text='Most Recent list of known faces',
+                 font='Helvetica 12 bold')
 label.grid(column=2, row=3, pady=10)
 rowCount = 4
+columnCount = 1
 filenames = os.listdir(directory)
 for filename in filenames:
     if filename.endswith(".jpg") or filename.endswith(".png"):
         label = tk.Label(text=filename)
-        label.grid(column=2, row=rowCount, pady=5)
-        rowCount += 1
+        if columnCount < 5:
+            label.grid(column=columnCount, row=rowCount, pady=5)
+            columnCount += 1
+        else:
+            columnCount = 1
+            rowCount += 1
+            label.grid(column=columnCount, row=rowCount, pady=5)
     else:
         continue
+email1 = tk.StringVar()  # Sender Email variable
+email2 = tk.StringVar()  # Receiver Email variable
+password = tk.StringVar()  # Password variable
+shouldEmail = tk.IntVar()  # Should send email notification?
 
+rowCount += 1
+label1 = tk.Label(text='Program Settings', font='Helvetica 12 bold')
+label1.grid(column=2, row=rowCount, pady=10)
+rowCount += 1
+tk.Checkbutton(window, text="Send Email Notification",
+               variable=shouldEmail).grid(column=1, row=rowCount)
+rowCount += 1
+label_email = tk.Label(text='Notification Generator Email')
+label_email.grid(column=1, row=rowCount, padx=10, pady=5)
+label_email1 = tk.Label(text='Notification Receiver Email')
+label_email1.grid(column=2, row=rowCount, padx=10, pady=5)
+rowCount += 1
+widget_email = tk.Entry(window, textvariable=email1, width=25)
+widget_email.grid(column=1, row=rowCount, padx=10, pady=5)
+widget_email1 = tk.Entry(window, textvariable=email2, width=25)
+widget_email1.grid(column=2, row=rowCount, padx=10, pady=5)
+rowCount += 1
+label_password = tk.Label(text='Password')
+label_password.grid(column=1, row=rowCount, padx=10, pady=5)
+rowCount += 1
+widget2 = tk.Entry(window, show="*", textvariable=password, width=25)
+widget2.grid(column=1, row=rowCount, padx=10, pady=5)
+rowCount += 1
+label3 = tk.Label(text='Main Functions',
+                  font='Helvetica 12 bold')
+label3.grid(column=2, row=rowCount, pady=10)
+rowCount += 1
+button1 = tk.Button(window, text="Upload Image", command=uploadimage)
+button1.grid(column=1, row=rowCount, padx=5, pady=10)
+button2 = tk.Button(window, text="Run Program", command=runProgram)
+button2.grid(column=2, row=rowCount, padx=5, pady=10)
+button3 = tk.Button(window, text="Exit", command=exit)
+button3.grid(column=3, row=rowCount, padx=5, pady=10)
 window.mainloop()
+
+if email1 is None:
+    email1 = ''
+else:
+    email1 = email1.get()
+if email2 is None:
+    email2 = ''
+else:
+    email2 = email2.get()
+if password is None:
+    password = ''
+else:
+    password = password.get()
+if shouldEmail is None:
+    shouldEmail = False
+else:
+    shouldEmail = True if shouldEmail.get() == 1 else False
 
 while True:
 
@@ -141,8 +189,8 @@ while True:
                     context = ssl.create_default_context()
                     with smtplib.SMTP(smtp_server, port) as server:
                         server.starttls(context=context)
-                        server.login(sender_email, password)
-                        server.sendmail(sender_email, receiver_email, message)
+                        server.login(email1, password)
+                        server.sendmail(email1, email2, message)
 
             # Get the face names based on distance to closest recognizable face
             face_distances = face_recognition.face_distance(
