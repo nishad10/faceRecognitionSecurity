@@ -14,23 +14,17 @@ import numpy as np
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
 
-# Load a sample picture and learn how to recognize it.
-obama_image = face_recognition.load_image_file("obama.jpg")
-obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
-
-# Load a second sample picture and learn how to recognize it.
-biden_image = face_recognition.load_image_file("biden.jpg")
-biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
-
-# Create arrays of known face encodings and their names
-known_face_encodings = [
-    obama_face_encoding,
-    biden_face_encoding
-]
-known_face_names = [
-    "Barack Obama",
-    "Joe Biden"
-]
+known_face_encodings = []
+known_face_names = []
+directory = './known_faces'
+for filename in os.listdir(directory):
+    if filename.endswith(".jpg") or filename.endswith(".png"):
+        user_image = face_recognition.load_image_file(filename)
+        user_image_encoding = face_recognition.face_encodings(user_image)[0]
+        known_face_encodings.append(user_image_encoding)
+        known_face_names.append(filename)
+    else:
+        continue
 
 # Initialize some variables
 face_locations = []
