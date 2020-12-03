@@ -6,15 +6,44 @@ import ssl
 import cv2
 import numpy as np
 import time
+from PIL import Image, ImageTk
+import tkinter as tk    # from tkinter import Tk for Python 3.x
+from tkinter import ttk
+from tkinter.filedialog import askopenfilename
+from tkinter import simpledialog
 
-# from tkinter import Tk     # from tkinter import Tk for Python 3.x
-#from tkinter.filedialog import askopenfilename
+runSecurity = False
+
+
+def runProgram():
+    window.destroy()
+    runSecurity = True
+
+
+def uploadimage():
+    filename = askopenfilename()
+    answer = simpledialog.askstring("Input", "What is the name of this person?",
+                                    parent=window)
+    if answer is not None:
+        shutil.move(filename, './known_faces/' + answer + '.jpg')
+    else:
+        print("ERROR MOVING FILE")
+
+
+def runProgram():
+    window.destroy()
+
+
+def exit():
+    window.destroy()
+    quit()
+
 
 ########### EMAIL SETTINGS ###########
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
-sender_email = "nishad10dev@gmail.com"
-receiver_email = "nishad.aherrao10@gmail.com"
+sender_email = input("Email that will generate notification:")
+receiver_email = input("Email that will receive notification:")
 password = input("Type your password and press enter:")
 message = """\
 Subject: Face Recognition Security Alert
@@ -34,9 +63,11 @@ for filename in os.listdir(directory):
     filename = './known_faces/' + filename
     if filename.endswith(".jpg") or filename.endswith(".png"):
         user_image = face_recognition.load_image_file(filename)
-        user_image_encoding = face_recognition.face_encodings(user_image)[0]
-        known_face_encodings.append(user_image_encoding)
-        known_face_names.append(oldfilename)
+        if len(face_recognition.face_encodings(user_image)) > 0:
+            user_image_encoding = face_recognition.face_encodings(user_image)[
+                0]
+            known_face_encodings.append(user_image_encoding)
+            known_face_names.append(oldfilename)
     else:
         continue
 
@@ -47,6 +78,31 @@ face_names = []
 process_this_frame = True
 sendEmail = True
 emailSentTime = time.time()
+
+## Open Window ##
+window = tk.Tk()  # Makes main window
+window.title("Camera Security")
+window.geometry("400x300")
+button1 = tk.Button(window, text="Upload Image", command=uploadimage)
+button1.grid(column=1, row=2, padx=5, pady=10)
+button2 = tk.Button(window, text="Run Program", command=runProgram)
+button2.grid(column=2, row=2, padx=5, pady=10)
+button3 = tk.Button(window, text="Exit", command=exit)
+button3.grid(column=3, row=2, padx=5, pady=10)
+
+label = tk.Label(text='Most Recent list of known faces')
+label.grid(column=2, row=3, pady=10)
+rowCount = 4
+filenames = os.listdir(directory)
+for filename in filenames:
+    if filename.endswith(".jpg") or filename.endswith(".png"):
+        label = tk.Label(text=filename)
+        label.grid(column=2, row=rowCount, pady=5)
+        rowCount += 1
+    else:
+        continue
+
+window.mainloop()
 
 while True:
 
