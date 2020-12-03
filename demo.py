@@ -2,18 +2,25 @@ from PIL import Image
 import face_recognition
 
 # Load the jpg file into a numpy array
-image = face_recognition.load_image_file("biden.jpg")
+user_image = face_recognition.load_image_file("./known_faces/obama.jpg")
+unknown_image = face_recognition.load_image_file("./unknown_faces/obama.jpg")
 
-face_locations = face_recognition.face_locations(image)
+user_encoding = face_recognition.face_encodings(user_image)[0]
+unknown_encoding = face_recognition.face_encodings(unknown_image)[0]
 
-for face_location in face_locations:
+known_faces_encoding = [user_encoding]
 
-    # Print the location of each face in this image
-    top, right, bottom, left = face_location
-    print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(
-        top, left, bottom, right))
+results = face_recognition.compare_faces(
+    known_faces_encoding, unknown_encoding)
 
-    # You can access the actual face itself like this:
-    face_image = image[top:bottom, left:right]
-    pil_image = Image.fromarray(face_image)
-    pil_image.show()
+if False in results:
+    # This means there is unknown face in our picture
+    if True in results:
+        # This means theres a known face as well as a unknown face so its ok
+        print('Ignoring alert as unknown face is accompanied by known face.')
+    if True not in results:
+        # This means theres all unknown faces in picture
+        print('ALERT!! UNKNOWN FACE FOUND!')
+else:
+    # This means all known faces in picture
+    print('Hello! This will not be alerted')
