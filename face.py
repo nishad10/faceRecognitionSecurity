@@ -1,6 +1,7 @@
 import face_recognition
 import cv2
 import numpy as np
+import os
 
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -18,6 +19,7 @@ known_face_encodings = []
 known_face_names = []
 directory = './known_faces'
 for filename in os.listdir(directory):
+    filename = './known_faces/' + filename
     if filename.endswith(".jpg") or filename.endswith(".png"):
         user_image = face_recognition.load_image_file(filename)
         user_image_encoding = face_recognition.face_encodings(user_image)[0]
