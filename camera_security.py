@@ -10,6 +10,7 @@ from PIL import Image, ImageTk
 import tkinter.ttk
 import tkinter as tk    # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
+import tkinter.simpledialog
 
 
 def runProgram():
@@ -19,8 +20,8 @@ def runProgram():
 
 def uploadimage():
     filename = askopenfilename()
-    answer = tk.simpledialog.askstring("Input", "What is the name of this person?",
-                                       parent=window)
+    answer = tkinter.simpledialog.askstring("Input", "What is the name of this person?",
+                                            parent=window)
     if answer is not None:
         shutil.move(filename, './known_faces/' + answer + '.jpg')
     else:
@@ -155,7 +156,7 @@ else:
 while True:
 
     # Send an email only if 1 minute has elapsed since last time you sent an email
-    sendEmail = time.time() - emailSentTime > 60  # seconds
+    sendEmail = time.time() - emailSentTime > 30  # seconds
 
     # Grab a single frame of video
     ret, frame = video_capture.read()
@@ -183,7 +184,7 @@ while True:
             if True not in matches:
                 # This means theres all unknown faces in picture
                 print('ALERT!! UNKNOWN FACE FOUND!')
-                if sendEmail:
+                if sendEmail is True and shouldEmail is True:
                     emailSentTime = time.time()  # Update last email sent time
                     # Send email alert
                     context = ssl.create_default_context()
