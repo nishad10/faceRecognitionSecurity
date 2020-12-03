@@ -1,7 +1,21 @@
 import face_recognition
-import cv2
-import numpy as np
 import os
+import shutil
+import smtplib
+import ssl
+#from PIL import Image
+# from tkinter import Tk     # from tkinter import Tk for Python 3.x
+#from tkinter.filedialog import askopenfilename
+
+port = 587  # For starttls
+smtp_server = "smtp.gmail.com"
+sender_email = "nishad10dev@gmail.com"
+receiver_email = "nishad.aherrao10@gmail.com"
+#password = input("Type your password and press enter:")
+message = """\
+Subject: Face Recognition Security Alert
+
+ALERT!! UNKNOWN FACE FOUND!"""
 
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -57,7 +71,20 @@ while True:
             matches = face_recognition.compare_faces(
                 known_face_encodings, face_encoding)
             name = "Unknown"
-
+            if False in matches:
+                # This means there is unknown face in our picture
+                if True in matches:
+                    # This means theres a known face as well as a unknown face so its ok
+                    print(
+                        'Ignoring alert as unknown face is accompanied by known face.')
+                if True not in matches:
+                    # This means theres all unknown faces in picture
+                    print('ALERT!! UNKNOWN FACE FOUND!')
+                    #context = ssl.create_default_context()
+                    # with smtplib.SMTP(smtp_server, port) as server:
+                    # server.starttls(context=context)
+                    #server.login(sender_email, password)
+                    #server.sendmail(sender_email, receiver_email, message)
             # # If a match was found in known_face_encodings, just use the first one.
             # if True in matches:
             #     first_match_index = matches.index(True)
