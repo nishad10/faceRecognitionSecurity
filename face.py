@@ -10,22 +10,25 @@ import time
 # from tkinter import Tk     # from tkinter import Tk for Python 3.x
 #from tkinter.filedialog import askopenfilename
 
+########### EMAIL SETTINGS ###########
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
 sender_email = "nishad10dev@gmail.com"
 receiver_email = "nishad.aherrao10@gmail.com"
 password = input("Type your password and press enter:")
-
 message = """\
 Subject: Face Recognition Security Alert
 
 ALERT!! UNKNOWN FACE FOUND!"""
 
+# Get video from webcam
 video_capture = cv2.VideoCapture(0)
 
 known_face_encodings = []
 known_face_names = []
 directory = './known_faces'
+
+# Load all list of known faces
 for filename in os.listdir(directory):
     oldfilename = filename
     filename = './known_faces/' + filename
@@ -43,14 +46,15 @@ face_encodings = []
 face_names = []
 process_this_frame = True
 sendEmail = True
-startTime = time.time()
+emailSentTime = time.time()
 
 while True:
-    sendEmail = time.time() - startTime > 60
+
+    # Send an email only if 1 minute has elapsed since last time you sent an email
+    sendEmail = time.time() - emailSentTime > 60  # seconds
+
     # Grab a single frame of video
     ret, frame = video_capture.read()
-
-    # Resize frame of video to 1/4 size for faster face recognition processing
 
     # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
     rgb_small_frame = frame[:, :, ::-1]
@@ -68,8 +72,6 @@ while True:
             matches = face_recognition.compare_faces(
                 known_face_encodings, face_encoding)
             name = "Unknown"
-            # f t f
-            print(matches)
             if True in matches:
                 # This means theres a known face so its ok
                 print(
@@ -78,36 +80,27 @@ while True:
                 # This means theres all unknown faces in picture
                 print('ALERT!! UNKNOWN FACE FOUND!')
                 if sendEmail:
-                    startTime = time.time()
+                    emailSentTime = time.time()  # Update last email sent time
+                    # Send email alert
                     context = ssl.create_default_context()
                     with smtplib.SMTP(smtp_server, port) as server:
                         server.starttls(context=context)
                         server.login(sender_email, password)
                         server.sendmail(sender_email, receiver_email, message)
-            # If a match was found in known_face_encodings, just use the first one.
-            # if True in matches:
-            #     first_match_index = matches.index(True)
-            #     name = known_face_names[first_match_index]
 
-            # Or instead, use the known face with the smallest distance to the new face
+            # Get the face names based on distance to closest recognizable face
             face_distances = face_recognition.face_distance(
                 known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
-
             face_names.append(name)
     process_this_frame = not process_this_frame
 
     # Display the results
     try:
         for (top, right, bottom, left), name in zip(face_locations, face_names):
-            # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-            top *= 4
-            right *= 4
-            bottom *= 4
-            left *= 4
-
+            # Draw a box around the face
             # Draw a box around the face
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
@@ -118,8 +111,8 @@ while True:
             cv2.putText(frame, name, (left + 6, bottom - 6),
                         font, 1.0, (255, 255, 255), 1)
     finally:
+        # Display the resulting image
         cv2.imshow('Video', frame)
-    # Display the resulting image
 
     # Hit 'q' on the keyboard to quit!
     if cv2.waitKey(1) & 0xFF == ord('q'):
