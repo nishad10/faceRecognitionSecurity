@@ -9,6 +9,12 @@ Built using face recognition model from here :-
 
 https://github.com/ageitgey/face_recognition
 
+Check out a demo of this program here :-
+
+
+[![YoutubeDemo](https://img.youtube.com/vi/ikXQcRfVvYs/0.jpg)](https://www.youtube.com/watch?v=ikXQcRfVvYs)
+
+
 ## Installation
 
 Here is a simple installation guide that worked for us (It might change for you depending on what programs/libraries you are missing)
